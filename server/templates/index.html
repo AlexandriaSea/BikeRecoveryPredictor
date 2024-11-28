@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Recovery Prediction</title>
+</head>
+<body>
+    <h1>Bike Recovery Prediction</h1>
+
+    <h2>Logistic Regression Model</h2>
+    <form id="logisticForm">
+        <label for="primary_offence">Primary Offence:</label><br>
+        <input type="text" id="primary_offence" name="PRIMARY_OFFENCE"><br>
+
+        <label for="occ_year">Occurrence Year:</label><br>
+        <input type="number" id="occ_year" name="OCC_YEAR"><br>
+
+        <label for="occ_month">Occurrence Month:</label><br>
+        <select id="occ_month" name="OCC_MONTH">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select><br>
+
+        <label for="occ_dow">Occurrence Day of Week:</label><br>
+        <select id="occ_dow" name="OCC_DOW">
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+        </select><br>
+
+        <label for="occ_day">Occurrence Day:</label><br>
+        <input type="number" id="occ_day" name="OCC_DAY"><br>
+
+        <label for="occ_doy">Occurrence Day of Year:</label><br>
+        <input type="number" id="occ_doy" name="OCC_DOY"><br>
+
+        <label for="occ_hour">Occurrence Hour:</label><br>
+        <input type="number" id="occ_hour" name="OCC_HOUR"><br>
+
+        <label for="report_year">Report Year:</label><br>
+        <input type="number" id="report_year" name="REPORT_YEAR"><br>
+
+        <label for="report_month">Report Month:</label><br>
+        <select id="report_month" name="REPORT_MONTH">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select><br>
+
+        <label for="report_dow">Report Day of Week:</label><br>
+        <select id="report_dow" name="REPORT_DOW">
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+        </select><br>
+
+        <label for="report_day">Report Day:</label><br>
+        <input type="number" id="report_day" name="REPORT_DAY"><br>
+
+        <label for="report_doy">Report Day of Year:</label><br>
+        <input type="number" id="report_doy" name="REPORT_DOY"><br>
+
+        <label for="report_hour">Report Hour:</label><br>
+        <input type="number" id="report_hour" name="REPORT_HOUR"><br>
+
+        <label for="division">Division:</label><br>
+        <input type="text" id="division" name="DIVISION"><br>
+
+        <label for="location_type">Location Type:</label><br>
+        <input type="text" id="location_type" name="LOCATION_TYPE"><br>
+
+        <label for="premises_type">Premises Type:</label><br>
+        <input type="text" id="premises_type" name="PREMISES_TYPE"><br>
+
+        <label for="bike_make">Bike Make:</label><br>
+        <input type="text" id="bike_make" name="BIKE_MAKE"><br>
+
+        <label for="bike_model">Bike Model:</label><br>
+        <input type="text" id="bike_model" name="BIKE_MODEL"><br>
+
+        <label for="bike_type">Bike Type:</label><br>
+        <input type="text" id="bike_type" name="BIKE_TYPE"><br>
+
+        <label for="bike_speed">Bike Speed:</label><br>
+        <input type="number" id="bike_speed" name="BIKE_SPEED"><br>
+
+        <label for="bike_colour">Bike Colour:</label><br>
+        <input type="text" id="bike_colour" name="BIKE_COLOUR"><br>
+
+        <label for="bike_cost">Bike Cost:</label><br>
+        <input type="number" id="bike_cost" name="BIKE_COST"><br>
+
+        <label for="hood_158">Hood 158:</label><br>
+        <input type="text" id="hood_158" name="HOOD_158"><br>
+
+        <label for="hood_140">Hood 140:</label><br>
+        <input type="text" id="hood_140" name="HOOD_140"><br>
+
+        <button type="button" onclick="predictLogistic()">Predict</button>
+    </form>
+    <p id="logisticResult"></p>
+
+    <h2>Random Forest Model</h2>
+    <form id="randomForestForm">
+        <label for="primary_offence_rf">Primary Offence:</label><br>
+        <input type="text" id="primary_offence_rf" name="PRIMARY_OFFENCE"><br>
+
+        <label for="occ_year_rf">Occurrence Year:</label><br>
+        <input type="number" id="occ_year_rf" name="OCC_YEAR"><br>
+
+        <label for="occ_month_rf">Occurrence Month:</label><br>
+        <select id="occ_month_rf" name="OCC_MONTH">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select><br>
+
+        <label for="occ_dow_rf">Occurrence Day of Week:</label><br>
+        <select id="occ_dow_rf" name="OCC_DOW">
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+        </select><br>
+
+        <label for="occ_day_rf">Occurrence Day:</label><br>
+        <input type="number" id="occ_day_rf" name="OCC_DAY"><br>
+
+        <label for="occ_doy_rf">Occurrence Day of Year:</label><br>
+        <input type="number" id="occ_doy_rf" name="OCC_DOY"><br>
+
+        <label for="occ_hour_rf">Occurrence Hour:</label><br>
+        <input type="number" id="occ_hour_rf" name="OCC_HOUR"><br>
+
+        <label for="report_year_rf">Report Year:</label><br>
+        <input type="number" id="report_year_rf" name="REPORT_YEAR"><br>
+
+        <label for="report_month_rf">Report Month:</label><br>
+        <select id="report_month_rf" name="REPORT_MONTH">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select><br>
+
+        <label for="report_dow_rf">Report Day of Week:</label><br>
+        <select id="report_dow_rf" name="REPORT_DOW">
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+        </select><br>
+
+        <label for="report_day_rf">Report Day:</label><br>
+        <input type="number" id="report_day_rf" name="REPORT_DAY"><br>
+
+        <label for="report_doy_rf">Report Day of Year:</label><br>
+        <input type="number" id="report_doy_rf" name="REPORT_DOY"><br>
+
+        <label for="report_hour_rf">Report Hour:</label><br>
+        <input type="number" id="report_hour_rf" name="REPORT_HOUR"><br>
+
+        <label for="division_rf">Division:</label><br>
+        <input type="text" id="division_rf" name="DIVISION"><br>
+
+        <label for="location_type_rf">Location Type:</label><br>
+        <input type="text" id="location_type_rf" name="LOCATION_TYPE"><br>
+
+        <label for="premises_type_rf">Premises Type:</label><br>
+        <input type="text" id="premises_type_rf" name="PREMISES_TYPE"><br>
+
+        <label for="bike_make_rf">Bike Make:</label><br>
+        <input type="text" id="bike_make_rf" name="BIKE_MAKE"><br>
+
+        <label for="bike_model_rf">Bike Model:</label><br>
+        <input type="text" id="bike_model_rf" name="BIKE_MODEL"><br>
+
+        <label for="bike_type_rf">Bike Type:</label><br>
+        <input type="text" id="bike_type_rf" name="BIKE_TYPE"><br>
+
+        <label for="bike_speed_rf">Bike Speed:</label><br>
+        <input type="number" id="bike_speed_rf" name="BIKE_SPEED"><br>
+
+        <label for="bike_colour_rf">Bike Colour:</label><br>
+        <input type="text" id="bike_colour_rf" name="BIKE_COLOUR"><br>
+
+        <label for="bike_cost_rf">Bike Cost:</label><br>
+        <input type="number" id="bike_cost_rf" name="BIKE_COST"><br>
+
+        <label for="hood_158_rf">Hood 158:</label><br>
+        <input type="text" id="hood_158_rf" name="HOOD_158"><br>
+
+        <label for="hood_140_rf">Hood 140:</label><br>
+        <input type="text" id="hood_140_rf" name="HOOD_140"><br>
+
+        <button type="button" onclick="predictRandomForest()">Predict</button>
+    </form>
+    <p id="randomForestResult"></p>
+
+    <script>
+        function predictLogistic() {
+            const data = {
+                PRIMARY_OFFENCE: document.getElementById('primary_offence').value,
+                OCC_YEAR: document.getElementById('occ_year').value,
+                OCC_MONTH: document.getElementById('occ_month').value,
+                OCC_DOW: document.getElementById('occ_dow').value,
+                OCC_DAY: document.getElementById('occ_day').value,
+                OCC_DOY: document.getElementById('occ_doy').value,
+                OCC_HOUR: document.getElementById('occ_hour').value,
+                REPORT_YEAR: document.getElementById('report_year').value,
+                REPORT_MONTH: document.getElementById('report_month').value,
+                REPORT_DOW: document.getElementById('report_dow').value,
+                REPORT_DAY: document.getElementById('report_day').value,
+                REPORT_DOY: document.getElementById('report_doy').value,
+                REPORT_HOUR: document.getElementById('report_hour').value,
+                DIVISION: document.getElementById('division').value,
+                LOCATION_TYPE: document.getElementById('location_type').value,
+                PREMISES_TYPE: document.getElementById('premises_type').value,
+                BIKE_MAKE: document.getElementById('bike_make').value,
+                BIKE_MODEL: document.getElementById('bike_model').value,
+                BIKE_TYPE: document.getElementById('bike_type').value,
+                BIKE_SPEED: document.getElementById('bike_speed').value,
+                BIKE_COLOUR: document.getElementById('bike_colour').value,
+                BIKE_COST: document.getElementById('bike_cost').value,
+                HOOD_158: document.getElementById('hood_158').value,
+                HOOD_140: document.getElementById('hood_140').value
+            };
+            fetch('/predict/log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('logisticResult').innerText = result.logistic_regression_prediction;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function predictRandomForest() {
+            const data = {
+                PRIMARY_OFFENCE: document.getElementById('primary_offence_rf').value,
+                OCC_YEAR: document.getElementById('occ_year_rf').value,
+                OCC_MONTH: document.getElementById('occ_month_rf').value,
+                OCC_DOW: document.getElementById('occ_dow_rf').value,
+                OCC_DAY: document.getElementById('occ_day_rf').value,
+                OCC_DOY: document.getElementById('occ_doy_rf').value,
+                OCC_HOUR: document.getElementById('occ_hour_rf').value,
+                REPORT_YEAR: document.getElementById('report_year_rf').value,
+                REPORT_MONTH: document.getElementById('report_month_rf').value,
+                REPORT_DOW: document.getElementById('report_dow_rf').value,
+                REPORT_DAY: document.getElementById('report_day_rf').value,
+                REPORT_DOY: document.getElementById('report_doy_rf').value,
+                REPORT_HOUR: document.getElementById('report_hour_rf').value,
+                DIVISION: document.getElementById('division_rf').value,
+                LOCATION_TYPE: document.getElementById('location_type_rf').value,
+                PREMISES_TYPE: document.getElementById('premises_type_rf').value,
+                BIKE_MAKE: document.getElementById('bike_make_rf').value,
+                BIKE_MODEL: document.getElementById('bike_model_rf').value,
+                BIKE_TYPE: document.getElementById('bike_type_rf').value,
+                BIKE_SPEED: document.getElementById('bike_speed_rf').value,
+                BIKE_COLOUR: document.getElementById('bike_colour_rf').value,
+                BIKE_COST: document.getElementById('bike_cost_rf').value,
+                HOOD_158: document.getElementById('hood_158_rf').value,
+                HOOD_140: document.getElementById('hood_140_rf').value
+            };
+            fetch('/predict/rf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('randomForestResult').innerText = result.random_forest_prediction;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

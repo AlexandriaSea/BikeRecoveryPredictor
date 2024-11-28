@@ -1,0 +1,16 @@
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore environment variables file
+.env
+
+# Ignore virtual environment directory
+venv/
+.venv/
+
+# Ignore other common files and directories
+*.log
+*.sqlite3
+.DS_Store
+node_modules/
