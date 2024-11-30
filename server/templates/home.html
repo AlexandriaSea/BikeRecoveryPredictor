@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Bike Recovery Prediction</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons (for chevron icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Link to custom CSS file -->
+    <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
+</head>
+
+<body>
+
+<main class="container py-5">
+    <h1 class="text-center">Bike Recovery Prediction</h1>
+    <p class="text-center text-secondary mb-5">Predict the likelihood of a bike recovery based on various factors
+        using logistic
+        regression and random forest models.</p>
+
+
+    <!-- Model Input Card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h4>Model Inputs</h4>
+            <!-- Collapse Button -->
+            <button aria-controls="modelInputs" aria-expanded="false" class="btn btn-light btn-sm"
+                    data-bs-target="#modelInputs" data-bs-toggle="collapse" type="button">
+                <span class="bi bi-chevron-down" id="collapseIcon"></span>
+            </button>
+        </div>
+        <div class="card-body collapse show" id="modelInputs"
+        ">
+        <form id="inputForm">
+
+            <!-- Occurrence Information -->
+            <h5 class="mt-2">Occurrence Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="occ_year_rf">What is the year of occurrence?</label>
+                    <input class="form-control" id="occ_year_rf" name="OCC_YEAR" required type="number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="occ_month_rf">What month did the occurrence happen?</label>
+                    <select class="form-control" id="occ_month_rf" name="OCC_MONTH" required>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="occ_dow_rf">What day of the week did the occurrence
+                        happen?</label>
+                    <select class="form-control" id="occ_dow_rf" name="OCC_DOW" required>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="occ_day_rf">What day of the month did the occurrence
+                        happen?</label>
+                    <input class="form-control" id="occ_day_rf" name="OCC_DAY" required type="number">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="occ_doy_rf">What day of the year did the occurrence
+                        happen?</label>
+                    <input class="form-control" id="occ_doy_rf" name="OCC_DOY" required type="number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="occ_hour_rf">What hour did the occurrence happen?</label>
+                    <input class="form-control" id="occ_hour_rf" name="OCC_HOUR" required type="number">
+                </div>
+            </div>
+
+            <hr class="border-1 border-secondary mb-4">
+
+            <!-- Report Information -->
+            <h5>Report Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="report_year_rf">What is the year of the report?</label>
+                    <input class="form-control" id="report_year_rf" name="REPORT_YEAR" required type="number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="report_month_rf">What month was the report filed?</label>
+                    <select class="form-control" id="report_month_rf" name="REPORT_MONTH" required>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="report_dow_rf">What day of the week was the report
+                        filed?</label>
+                    <select class="form-control" id="report_dow_rf" name="REPORT_DOW" required>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="report_day_rf">What day of the month was the report
+                        filed?</label>
+                    <input class="form-control" id="report_day_rf" name="REPORT_DAY" required type="number">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="report_doy_rf">What day of the year was the report
+                        filed?</label>
+                    <input class="form-control" id="report_doy_rf" name="REPORT_DOY" required type="number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="report_hour_rf">What hour was the report filed?</label>
+                    <input class="form-control" id="report_hour_rf" name="REPORT_HOUR" required type="number">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="primary_offense_rf">What is the primary offense (Title of
+                        Offense)?</label>
+                    <input class="form-control" id="primary_offense_rf" name="PRIMARY_OFFENSE" type="text" required>
+                </div>
+            </div>
+
+
+            <hr class="border-1 border-secondary mb-4">
+
+            <!-- Bike Information -->
+            <h5>Bike Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="bike_make_rf">What is the make of the bike?</label>
+                    <input class="form-control" id="bike_make_rf" name="BIKE_MAKE" required type="text">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="bike_model_rf">What is the model of the bike?</label>
+                    <input class="form-control" id="bike_model_rf" name="BIKE_MODEL" required type="text">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="bike_type_rf">What type of bike is it?</label>
+                    <input class="form-control" id="bike_type_rf" name="BIKE_TYPE" required type="text">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="bike_speed_rf">What is the speed of the bike?</label>
+                    <input class="form-control" id="bike_speed_rf" name="BIKE_SPEED" required type="number">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="bike_colour_rf">What is the color of the bike?</label>
+                    <input class="form-control" id="bike_colour_rf" name="BIKE_COLOUR" required type="text">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="bike_cost_rf">What is the cost of the bike?</label>
+                    <input class="form-control" id="bike_cost_rf" name="BIKE_COST" required type="number">
+                </div>
+            </div>
+
+            <hr class="border-1 border-secondary mb-4">
+
+            <!-- Location Information -->
+            <h5>Location Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="division_rf">Which police division was the incident reported
+                        in?</label>
+                    <input class="form-control" id="division_rf" name="DIVISION" required type="text">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="location_type_rf">What type of location was the bike
+                        stolen?</label>
+                    <input class="form-control" id="location_type_rf" name="LOCATION_TYPE" required type="text">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="premises_type_rf">What type of premises was involved?</label>
+                    <input class="form-control" id="premises_type_rf" name="PREMISES_TYPE" required type="text">
+                </div>
+            </div>
+
+            <hr class="border-1 border-secondary mb-4">
+
+            <!-- Hood Identifiers -->
+            <h5>Neighborhood Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="hood_158_rf">What is the 158 neighborhood identifier?</label>
+                    <input class="form-control" id="hood_158_rf" name="HOOD_158" required type="text">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="hood_140_rf">What is the 140 neighborhood identifier?</label>
+                    <input class="form-control" id="hood_140_rf" name="HOOD_140" required type="text">
+                </div>
+            </div>
+
+            <hr class="border-1 border-secondary mb-4">
+
+
+            <!-- Buttons for Predictions and Clear -->
+            <div class="d-flex mt-4">
+                <!-- Logistic Regression Button -->
+                <button class="btn btn-success" onclick="predictLogisticRegression()" type="button">Predict
+                    with
+                    Logistic Regression
+                </button>
+
+                <!-- Random Forest Button -->
+                <button class="btn btn-info ms-2" onclick="predictRandomForest()" type="button">Predict with Random
+                    Forest
+                </button>
+
+                <!-- Clear Button -->
+                <button class="btn btn-danger ms-2" onclick="clearForm()" type="button">Clear</button>
+            </div>
+        </form>
+
+
+    </div>
+    </div>
+
+
+    <!-- Results Card -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4>Logistic Regression Results</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group" id="logisticHistory">
+                        <!-- Placeholder message will be shown here until results are added -->
+                        <li class="list-group-item text-muted">Prediction results for Logistic Regression will
+                            appear here.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4>Random Forest Results</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group" id="randomForestHistory">
+                        <!-- Placeholder message will be shown here until results are added -->
+                        <li class="list-group-item text-muted">Prediction results for Random Forest will appear
+                            here.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Bootstrap JS & Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<!-- Link to custom JS file -->
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+</body>
+
+</html>

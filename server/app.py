@@ -19,6 +19,11 @@ with open('models/pkl/random_forest.pkl', 'rb') as f:
 def home():
     return render_template('index.html')
 
+@app.route('/home')
+def modern_home_page():
+    return render_template('home.html')
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
