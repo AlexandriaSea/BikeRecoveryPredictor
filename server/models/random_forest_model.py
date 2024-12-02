@@ -1,10 +1,35 @@
+"""
+Bike Recovery Prediction - Random Forest Model
+
+Data Processing:
+1. Binary target creation (1 for recovered, 0 for not recovered)
+2. Feature selection (dropped unnecessary columns)
+3. Missing value handling (median for numerical, constant for categorical)
+4. Feature encoding (one-hot encoding for categorical features)
+5. Feature scaling (StandardScaler for numerical features)
+
+Performance Improvement:
+1. Class imbalance handling:
+   - SMOTE oversampling
+   - Class weights
+   - Stratified splitting
+2. Model optimization:
+   - 100 trees (n_estimators)
+   - Random state for reproducibility
+   - Class weight balancing
+3. Feature analysis:
+   - Feature importance visualization
+   - Random forest importance ranking
+   - Confusion matrix plotting
+"""
+
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from imblearn.under_sampling import RandomUnderSampler
 from sklearn.ensemble import RandomForestClassifier
 from imblearn.over_sampling import SMOTE
 from sklearn.utils.class_weight import compute_class_weight
@@ -98,11 +123,9 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, target_name):
     print(f"X_train shape after transform: {X_train_transformed.shape}")
     print(f"X_test shape after transform: {X_test_transformed.shape}")
     
-    # Apply SMOTE and Undersampling
+    # Apply SMOTE
     smote = SMOTE(random_state=42)
-    undersample = RandomUnderSampler(random_state=42)
     X_train_balanced, y_train_balanced = smote.fit_resample(X_train_transformed, y_train)
-    X_train_balanced, y_train_balanced = undersample.fit_resample(X_train_balanced, y_train_balanced)
     
     # Fit the classifier on balanced data
     pipeline.named_steps['classifier'].fit(X_train_balanced, y_train_balanced)
@@ -123,7 +146,7 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, target_name):
     roc_auc = roc_auc_score(y_test, y_pred_proba)
     
     # Display results
-    print(f"Evaluation for {target_name} Prediction:")
+    print(f"Evaluation for {target_name} Prediction using Random Forest:")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Precision: {precision:.2f}")
     print(f"Recall: {recall:.2f}")

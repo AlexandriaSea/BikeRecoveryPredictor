@@ -22,6 +22,15 @@ with open('models/pkl/decision_tree_model.pkl', 'rb') as f:
 def home():
     return render_template('home.html')
 
+@app.route('/plot')
+def plot():
+    return render_template('plots.html')
+
+# Route to serve plot files
+@app.route('/models/plot/<path:filename>')
+def serve_plot(filename):
+    return send_from_directory('models/plot', filename)
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),

@@ -1,3 +1,29 @@
+"""
+Bike Recovery Prediction - Logistic Regression Model
+
+Data Processing:
+1. Binary target creation (1 for recovered, 0 for not recovered)
+2. Feature selection (dropped unnecessary columns)
+3. Missing value handling (median for numerical, constant for categorical)
+4. Feature encoding (one-hot encoding for categorical features)
+5. Feature scaling (StandardScaler for numerical features)
+
+Performance Improvement:
+1. Class imbalance handling:
+   - SMOTE oversampling
+   - Class weights
+   - Stratified splitting
+2. Model optimization:
+   - Increased max iterations
+   - Random state for reproducibility
+   - Class weight balancing
+3. Feature analysis:
+   - Coefficient visualization
+   - Feature importance ranking
+   - Confusion matrix plotting
+"""
+
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -115,7 +141,7 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, target_name):
     roc_auc = roc_auc_score(y_test, y_pred_proba)
     
     # Display results
-    print(f"Evaluation for {target_name} Prediction:")
+    print(f"Evaluation for {target_name} Prediction using Logistic Regression:")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Precision: {precision:.2f}")
     print(f"Recall: {recall:.2f}")

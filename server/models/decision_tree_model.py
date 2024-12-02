@@ -1,16 +1,45 @@
+"""
+Bike Recovery Prediction - Decision Tree Model
+
+Data Processing:
+1. Binary target creation (1 for recovered, 0 for not recovered)
+2. Feature selection (dropped unnecessary columns)
+3. Missing value handling (median for numerical, constant for categorical)
+4. Feature encoding (one-hot encoding for categorical features)
+5. Feature scaling (StandardScaler for numerical features)
+
+Performance Improvement:
+1. Class imbalance handling:
+   - SMOTE oversampling
+   - Class weights
+   - Stratified splitting
+2. Hyperparameter tuning:
+   - GridSearchCV with 5-fold cross-validation
+   - Optimizing for F1 score
+3. Model parameters tuning:
+   - Tree depth control
+   - Minimum samples for splits
+   - Split criterion selection
+"""
+
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.tree import DecisionTreeClassifier
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import GridSearchCV
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, classification_report
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 
 # Load the dataset
 df = pd.read_csv('https://raw.githubusercontent.com/AlexandriaSea/BikeRecoveryDataset/main/Bicycle_Thefts_Open_Data.csv')
@@ -75,31 +104,49 @@ class_weights = compute_class_weight('balanced',
                                    y=y_recovered)
 weight_dict = dict(zip(np.unique(y_recovered), class_weights))
 
-# Create the final pipeline with Decision Tree Classifier
-pipeline = Pipeline(steps=[
+# Create the final pipeline with Decision Tree Classifier and SMOTE
+pipeline = ImbPipeline(steps=[
     ('preprocessor', preprocessor),
-    ('classifier', DecisionTreeClassifier(
-        max_depth=5,  # Limiting tree depth to avoid overfitting
-        random_state=42,
-        class_weight=weight_dict
-    ))
+    ('smote', SMOTE(random_state=42)),
+    ('classifier', DecisionTreeClassifier(random_state=42, class_weight=weight_dict))
 ])
+
+# Define parameter grid
+param_grid = {
+    'classifier__max_depth': [5, 10, 15],
+    'classifier__min_samples_split': [5, 10],
+    'classifier__min_samples_leaf': [2, 4],
+    'classifier__criterion': ['gini', 'entropy']
+}
 
 # Function to train and evaluate the model
 def train_and_evaluate(X_train, X_test, y_train, y_test, target_name):
-    # Transform features first
-    X_train_transformed = pipeline.named_steps['preprocessor'].fit_transform(X_train)
+    # Grid Search
+    grid_search = GridSearchCV(
+        estimator=pipeline,
+        param_grid=param_grid,
+        cv=5,
+        scoring='f1',
+        n_jobs=-1,
+        verbose=2
+    )
     
-    # Fit the classifier
-    pipeline.named_steps['classifier'].fit(X_train_transformed, y_train)
+    # Fit grid search
+    grid_search.fit(X_train, y_train)
     
-    # Save the trained model
+    # Print best parameters
+    print("Best parameters:", grid_search.best_params_)
+    
+    # Use best model
+    best_model = grid_search.best_estimator_
+    
+    # Save best model
     with open('pkl/decision_tree_model.pkl', 'wb') as file:
-        pickle.dump(pipeline, file)
+        pickle.dump(best_model, file)
     
-    # Make predictions
-    y_pred = pipeline.predict(X_test)
-    y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
+    # Make predictions with best model
+    y_pred = best_model.predict(X_test)
+    y_pred_proba = best_model.predict_proba(X_test)[:, 1]
 
     # Evaluation metrics
     accuracy = accuracy_score(y_test, y_pred)
@@ -109,7 +156,7 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, target_name):
     roc_auc = roc_auc_score(y_test, y_pred_proba)
     
     # Display results
-    print(f"Evaluation for {target_name} Prediction:")
+    print(f"Best Model Evaluation for {target_name} using Decision Tree:")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Precision: {precision:.2f}")
     print(f"Recall: {recall:.2f}")
@@ -119,22 +166,46 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, target_name):
     print(confusion_matrix(y_test, y_pred))
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred))
-    print("\n" + "-"*50 + "\n")
     
+    # Get feature importances from best model
+    feature_importances = best_model.named_steps['classifier'].feature_importances_
     
+    # Get transformed feature names
+    feature_names = []
+    feature_names.extend(numerical_columns)
+    cat_encoder = best_model.named_steps['preprocessor'].named_transformers_['cat'].named_steps['onehot']
+    categorical_features = cat_encoder.get_feature_names_out(categorical_columns)
+    feature_names.extend(categorical_features)
+
+    # Create and plot feature importances
+    n_features = min(len(feature_names), len(feature_importances))
+    importance_df = pd.DataFrame({
+        'Feature': feature_names[:n_features],
+        'Importance': feature_importances[:n_features]
+    }).sort_values(by='Importance', ascending=False)
+
+    plt.figure(figsize=(12, 8))
+    plt.barh(importance_df['Feature'][:20], importance_df['Importance'][:20])
+    plt.xlabel('Importance Score')
+    plt.ylabel('Feature')
+    plt.title('Top 20 Most Influential Features (Best Model)')
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    plt.savefig('plot/feature_importances_dt.png')
+    plt.show()
+
     # Plot confusion matrix
     cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-                xticklabels=['Not Recovered', 'Recovered'], 
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                xticklabels=['Not Recovered', 'Recovered'],
                 yticklabels=['Not Recovered', 'Recovered'])
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    plt.title('Confusion Matrix')
+    plt.title('Confusion Matrix (Best Model)')
     plt.savefig('plot/confusion_matrix_dt.png')
     plt.show()
     
-
 # Train and evaluate for 'IS_RECOVERED' prediction
 try:
     print("Training and Evaluation for 'IS_RECOVERED' Prediction")
