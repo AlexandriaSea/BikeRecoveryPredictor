@@ -15,14 +15,12 @@ with open('models/pkl/logistic_regression.pkl', 'rb') as f:
 with open('models/pkl/random_forest.pkl', 'rb') as f:
     random_forest_model = pickle.load(f)
 
+with open('models/pkl/decision_tree_model.pkl', 'rb') as f:
+    decision_tree_model = pickle.load(f)
+
 @app.route('/')
 def home():
-    return render_template('index.html')
-
-@app.route('/home')
-def modern_home_page():
     return render_template('home.html')
-
 
 @app.route('/favicon.ico')
 def favicon():
@@ -52,6 +50,18 @@ def predict_random_forest():
 
     message = "Your bike may be recovered" if result == 1 else "Your bike may NOT be recovered"
     return jsonify({'random_forest_prediction': message})
+
+@app.route('/predict/dt', methods=['POST'])
+def predict_decision_tree():
+    data = request.get_json(force=True)
+    df = pd.DataFrame([data])
+
+    # Predict using decision tree model
+    prediction = decision_tree_model.predict(df)
+    result = prediction[0]
+
+    message = "Your bike may be recovered" if result == 1 else "Your bike may NOT be recovered"
+    return jsonify({'decision_tree_prediction': message})
 
 if __name__ == '__main__':
     app.run(debug=True)
